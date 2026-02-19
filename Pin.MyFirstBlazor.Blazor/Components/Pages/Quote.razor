@@ -1,0 +1,40 @@
+﻿@page "/quote"
+@inject HttpClient HttpClient
+<h3>Quote of the day</h3>
+@if (quoteModel is not null)
+{
+    <div class="alert alert-primary" role="alert">
+        <img src="@quoteModel.IconUrl" />
+        @quoteModel.Value
+    </div>
+}
+<div>
+    <button class="btn btn-outline-info" @onclick="GetQuote">Get quote</button>
+</div>
+@* display the quote *@
+@code {
+    private readonly Uri apiUri
+        = new Uri("https://api.chucknorris.io/jokes/random");
+    private QuoteModel quoteModel;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetQuote();
+    }
+
+    private async Task GetQuote()
+    {
+        //call the api method
+        var result = await HttpClient.GetAsync(apiUri.AbsoluteUri);
+        //check if success
+        if (result.IsSuccessStatusCode)
+        {
+            //put in quotemodel
+            var content = await result.Content.ReadAsStringAsync();
+            //deserialize to quotemodel
+            quoteModel = JsonSerializer
+                .Deserialize<QuoteModel>(content);
+        }
+    }
+}
+

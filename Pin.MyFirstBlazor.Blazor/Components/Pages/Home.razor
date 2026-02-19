@@ -1,0 +1,17 @@
+﻿@page "/"
+
+<PageTitle>Home</PageTitle>
+<div class="row">
+    <div class="col col-lg-5 mx-auto">
+        <div class="form-group">
+            <label>Increment:</label>
+            @* input binding *@
+            <input @bind-value="increment" class="form-control"> 
+        </div>
+    </div>
+</div>
+<Counter Increment="increment"></Counter>
+
+@code {
+    private int increment = 0;
+}
