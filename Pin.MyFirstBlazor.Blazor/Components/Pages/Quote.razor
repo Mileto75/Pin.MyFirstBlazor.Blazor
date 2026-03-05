@@ -1,32 +1,50 @@
 ﻿@page "/quote"
+
 @inject HttpClient HttpClient
 <h3>Quote of the day</h3>
-@if (quoteModel is not null)
+@if (quoteModels is not null)
 {
-    <div class="alert alert-primary" role="alert">
-        <img src="@quoteModel.IconUrl" />
-        @quoteModel.Value
-    </div>
+    @foreach(var quoteModel in quoteModels)
+    { 
+        <QuoteComponent QuoteModel="quoteModel"></QuoteComponent>
+    }
 }
 <div>
-    <button class="btn btn-outline-info" @onclick="GetQuote">Get quote</button>
+    <button class="btn btn-outline-info" @onclick="LoadQuotes">Load quote</button>
 </div>
 @* display the quote *@
 @code {
     private readonly Uri apiUri
         = new Uri("https://api.chucknorris.io/jokes/random");
-    private QuoteModel quoteModel;
+    private List<QuoteModel> quoteModels = new();
 
     protected override async Task OnInitializedAsync()
     {
-        await GetQuote();
-    }
 
-    private async Task GetQuote()
+        quoteModels.Add(await GetQuote());
+        await Task.Delay(400); //for demo purpose
+        //StateHasChanged();
+        quoteModels.Add(await GetQuote());
+        await Task.Delay(400); //for demo purpose
+        //StateHasChanged();
+        quoteModels.Add(await GetQuote());
+        await Task.Delay(400); //for demo purpose
+        Console.WriteLine("OnInitialized");
+    }
+    protected async override Task OnParametersSetAsync()
+    {
+        Console.WriteLine("Paramtersset");
+    }
+    protected override void OnAfterRender(bool firstRender)
+    {
+        Console.WriteLine("OnRender");
+    }
+    private async Task<QuoteModel> GetQuote()
     {
         //call the api method
         var result = await HttpClient.GetAsync(apiUri.AbsoluteUri);
         //check if success
+        var quoteModel = new QuoteModel();
         if (result.IsSuccessStatusCode)
         {
             //put in quotemodel
@@ -35,6 +53,12 @@
             quoteModel = JsonSerializer
                 .Deserialize<QuoteModel>(content);
         }
+        return quoteModel;
+    }
+    private async Task LoadQuotes()
+    {
+        quoteModels.Clear();
+        quoteModels.Add(await GetQuote());
     }
 }
 

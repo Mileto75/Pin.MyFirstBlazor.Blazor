@@ -1,0 +1,11 @@
+﻿
+<div class="alert alert-primary" role="alert">
+    <img src="@QuoteModel.IconUrl" />
+    @QuoteModel.Value
+</div>
+
+
+@code {
+    [Parameter]
+    public QuoteModel QuoteModel { get; set; }
+}
